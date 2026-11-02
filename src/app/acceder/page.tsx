@@ -13,46 +13,61 @@ const messages: Record<string, string> = {
 export default async function AccessPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; mensaje?: string }>;
+  searchParams: Promise<{ error?: string; mensaje?: string; modo?: string }>;
 }) {
   if (await getCurrentUser()) redirect("/");
   const params = await searchParams;
+  const isSigningUp = params.modo === "registro";
   const message = params.error ? messages[params.error] : null;
 
   return (
-    <main className="access-page">
-      <Link className="access-back" href="/">← Volver a Capry</Link>
-      <div className="access-intro">
-        <p className="eyebrow">Tu cuenta</p>
-        <h1>Comparte lo que pasa en Quito.</h1>
-        <p>Explorar es libre. Necesitas una cuenta para publicar, confirmar asistencia o reportar el aforo.</p>
-      </div>
-      {message && <p className="form-message" role="alert">{message}</p>}
-      {params.mensaje === "correo" && (
-        <p className="form-message" role="status">Revisa tu correo para confirmar la cuenta antes de entrar.</p>
-      )}
-      <div className="access-forms">
-        <section className="access-card" aria-labelledby="login-title">
-          <h2 id="login-title">Iniciar sesión</h2>
-          <form action={signIn}>
-            <label htmlFor="login-email">Correo</label>
-            <input id="login-email" name="email" type="email" autoComplete="email" required maxLength={254} />
-            <label htmlFor="login-password">Contraseña</label>
-            <input id="login-password" name="password" type="password" autoComplete="current-password" required minLength={8} maxLength={128} />
-            <button type="submit">Entrar</button>
-          </form>
-        </section>
-        <section className="access-card" aria-labelledby="signup-title">
-          <h2 id="signup-title">Crear cuenta</h2>
-          <form action={signUp}>
-            <label htmlFor="signup-email">Correo</label>
-            <input id="signup-email" name="email" type="email" autoComplete="email" required maxLength={254} />
-            <label htmlFor="signup-password">Contraseña</label>
-            <input id="signup-password" name="password" type="password" autoComplete="new-password" required minLength={8} maxLength={128} />
-            <button type="submit">Registrarme</button>
-          </form>
-        </section>
-      </div>
-    </main>
+    <div className="access-page">
+      <header className="access-header">
+        <Link className="brand" href="/" aria-label="Capry, ir al inicio">
+          <span className="brand-mark" aria-hidden="true">C</span>
+          <span>capry<span className="brand-dot">.</span></span>
+        </Link>
+        <Link className="access-back" href="/">Volver al mapa <span aria-hidden="true">↗</span></Link>
+      </header>
+      <main className="access-main">
+        <div className="access-content">
+          <div className="access-content-inner">
+            <div className="access-intro">
+              <p className="eyebrow">Tu cuenta en Capry</p>
+              <h1 id="access-title">{isSigningUp ? "Crea tu cuenta." : "Iniciar sesión."}</h1>
+              <p>Explora las fiestas de Quito libremente. Entra para publicar, confirmar tu asistencia y reportar el aforo.</p>
+            </div>
+            {message && <p className="form-message" role="alert">{message}</p>}
+            {params.mensaje === "correo" && (
+              <p className="form-message" role="status">Revisa tu correo para confirmar la cuenta antes de entrar.</p>
+            )}
+            {isSigningUp ? (
+              <>
+                <form className="access-form" action={signUp} aria-labelledby="access-title">
+                  <label htmlFor="signup-email">Correo electrónico</label>
+                  <input id="signup-email" name="email" type="email" autoComplete="email" placeholder="tu@correo.com" required maxLength={254} />
+                  <label htmlFor="signup-password">Contraseña</label>
+                  <input id="signup-password" name="password" type="password" autoComplete="new-password" placeholder="Mínimo 8 caracteres" required minLength={8} maxLength={128} />
+                  <button type="submit">Crear cuenta</button>
+                </form>
+                <Link className="access-switch" href="/acceder">Ya tengo cuenta · Iniciar sesión</Link>
+              </>
+            ) : (
+              <>
+                <form className="access-form" action={signIn} aria-labelledby="access-title">
+                  <label htmlFor="login-email">Correo electrónico</label>
+                  <input id="login-email" name="email" type="email" autoComplete="email" placeholder="tu@correo.com" required maxLength={254} />
+                  <label htmlFor="login-password">Contraseña</label>
+                  <input id="login-password" name="password" type="password" autoComplete="current-password" placeholder="Tu contraseña" required minLength={8} maxLength={128} />
+                  <button type="submit">Iniciar sesión</button>
+                </form>
+                <Link className="access-switch" href="/acceder?modo=registro">Registrarme</Link>
+              </>
+            )}
+          </div>
+        </div>
+        <div className="access-visual" aria-hidden="true" />
+      </main>
+    </div>
   );
 }

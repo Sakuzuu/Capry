@@ -26,7 +26,7 @@ export async function signIn(formData: FormData) {
 
 export async function signUp(formData: FormData) {
   const input = credentials(formData);
-  if (!input) redirect("/acceder?error=datos");
+  if (!input) redirect("/acceder?modo=registro&error=datos");
 
   const supabase = await createClient();
   const appUrl = process.env.APP_URL;
@@ -34,7 +34,7 @@ export async function signUp(formData: FormData) {
     ...input,
     options: appUrl ? { emailRedirectTo: new URL("/auth/callback", appUrl).toString() } : undefined,
   });
-  if (error) redirect("/acceder?error=registro");
+  if (error) redirect("/acceder?modo=registro&error=registro");
   if (data.session) redirect("/");
   redirect("/acceder?mensaje=correo");
 }
