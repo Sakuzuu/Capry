@@ -2,17 +2,25 @@
 
 Sitio de descubrimiento de fiestas en Quito. La portada y la consulta de eventos son públicas; las cuentas usan Supabase Auth con sesiones guardadas en cookies y verificadas en el servidor.
 
+## Estado de la publicación
+
+La versión con servidor ya está publicada en [Capry](https://capry-quito.blondepony.chatgpt.site). Cualquier visitante puede abrir la portada y consultar los eventos sin registrarse. En el alojamiento ya están configuradas `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` y `APP_URL`. En Supabase Auth, **Site URL** apunta al dominio publicado y `/auth/callback` figura entre las redirecciones permitidas.
+
+**Pendiente para completar el registro por correo:** Supabase no permite editar la plantilla **Confirm sign up** de este proyecto con el servicio de correo predeterminado del plan actual. El panel pide configurar SMTP propio o pasar a Pro. Cuando haya un proveedor de correo, abre [Authentication → Emails → Confirm sign up](https://supabase.com/dashboard/project/dfigsoqmqnqvklbqsxxy/auth/templates/confirm-sign-up), sustituye el enlace `{{ .ConfirmationURL }}` por `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email` y guarda. Después registra una cuenta de prueba y confirma el correo desde otro navegador para verificar el flujo completo. Hasta entonces, la confirmación con la plantilla predeterminada no está verificada para sesiones de servidor.
+
+La publicación usa un repositorio de origen propio de Sites con Vinext para ejecutar las rutas de servidor. Este repositorio de GitHub conserva el código de la aplicación Next.js y sus migraciones.
+
 ## Desarrollo local
 
 1. Instala las dependencias con `pnpm install`.
 2. Copia `.env.example` a `.env.local` y completa la URL y la **clave publicable** del proyecto Supabase Capry. `APP_URL` debe ser el origen desde el que se abre la aplicación, por ejemplo `http://localhost:3000`.
-3. En Supabase Auth, configura ese origen como **Site URL** y añade `APP_URL/auth/callback` como URL de redirección permitida.
-4. Para confirmar el registro en una aplicación con sesiones de servidor, cambia el enlace de la plantilla **Confirm signup** a `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email`.
+3. Para probar registros locales, añade `http://localhost:3000/auth/callback` como URL de redirección permitida en Supabase Auth. Mantén la **Site URL** del dominio publicado.
+4. La edición de la plantilla de confirmación requiere SMTP propio o Pro, como se explica arriba.
 5. Ejecuta `pnpm dev` y abre `APP_URL`.
 
-Al desplegar, configura las mismas variables con el dominio definitivo y añade su URL de callback a Supabase Auth. La aplicación utiliza solo la clave publicable. Nunca añadas `service_role` ni `sb_secret_...` a variables `NEXT_PUBLIC_` o al repositorio.
+La aplicación utiliza solo la clave publicable. Nunca añadas `service_role` ni `sb_secret_...` a variables `NEXT_PUBLIC_` o al repositorio.
 
-La aplicación necesita un servidor Next.js: `output: "export"` se retiró en P4. La publicación estática anterior de Sites no ejecuta estas páginas ni la autenticación hasta migrar su alojamiento a uno compatible con ejecución de servidor.
+La aplicación necesita ejecución de servidor: `output: "export"` se retiró en P4. La publicación de Sites ya se migró a esa modalidad.
 
 ## Datos y permisos
 
