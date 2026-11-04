@@ -1,5 +1,5 @@
 export const flowLevels = [
-  { label: "Bajo", color: "purple" },
+  { label: "Bajo", color: "red" },
   { label: "Medio", color: "yellow" },
-  { label: "Full", color: "red" },
+  { label: "Full", color: "purple" },
 ] as const;

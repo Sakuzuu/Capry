@@ -24,6 +24,14 @@ La aplicación utiliza solo la clave publicable. Nunca añadas `service_role` ni
 
 La aplicación necesita ejecución de servidor: `output: "export"` se retiró en P4. La publicación de Sites ya se migró a esa modalidad.
 
+## Mapa de ejemplo
+
+La portada muestra cinco eventos ficticios definidos en `src/features/map/sample-events.ts`. Seleccionar un marcador o un elemento de la lista abre la misma ficha; todavía no se leen eventos de Supabase. Las coordenadas se guardan como `latitude` y `longitude` y se convierten al orden longitud–latitud de MapLibre en `src/features/map/coordinates.ts`.
+
+El mapa usa el estilo oscuro de OpenFreeMap, basado en datos de OpenStreetMap, con atribución visible y sin clave de acceso.
+Los colores de fondo, vías y nombres se ajustan en `src/features/map/map-theme.ts` para mantener la paleta morada de Capry.
+El archivo `public/maplibre-gl-worker.mjs` corresponde a la versión fijada de MapLibre GL JS; al actualizar esa dependencia, copia de nuevo su worker desde `node_modules/maplibre-gl/dist/`.
+
 ## Datos y permisos
 
 Las migraciones de `supabase/migrations` están aplicadas al proyecto Capry. La API pública `GET /api/events` devuelve datos de eventos y conteos agregados, sin identificadores de cuentas. La escritura futura debe obtener la identidad con `getCurrentUser()` en el servidor y dejar que las políticas RLS vuelvan a comprobar la propiedad de cada fila.
