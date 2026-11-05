@@ -24,9 +24,9 @@ La aplicación utiliza solo la clave publicable. Nunca añadas `service_role` ni
 
 La aplicación necesita ejecución de servidor: `output: "export"` se retiró en P4. La publicación de Sites ya se migró a esa modalidad.
 
-## Mapa de ejemplo
+## Mapa de eventos
 
-La portada muestra cinco eventos ficticios definidos en `src/features/map/sample-events.ts`. Seleccionar un marcador o un elemento de la lista abre la misma ficha; todavía no se leen eventos de Supabase. Las coordenadas se guardan como `latitude` y `longitude` y se convierten al orden longitud–latitud de MapLibre en `src/features/map/coordinates.ts`.
+La portada consulta `GET /api/events` al cargar el mapa y al moverlo. La función `public.visible_events_in_bounds` filtra en PostgreSQL por área, estado y horario de Quito; agrupa publicaciones conectadas a menos de 250 metros cuando comparten el mismo horario. La página muestra un estado vacío hasta que haya eventos reales. Seleccionar un marcador o un elemento de la lista abre la misma ficha. Las coordenadas se guardan como `latitude` y `longitude` y se convierten al orden longitud–latitud de MapLibre en `src/features/map/coordinates.ts`.
 
 El mapa usa el estilo oscuro de OpenFreeMap, basado en datos de OpenStreetMap, con atribución visible y sin clave de acceso.
 Los colores de fondo, vías y nombres se ajustan en `src/features/map/map-theme.ts` para mantener la paleta morada de Capry.
