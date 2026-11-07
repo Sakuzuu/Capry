@@ -14,7 +14,7 @@ export default async function HomePage() {
       <SiteHeader email={user?.email} />
       <main id="inicio">
         <Hero />
-        <MapSection />
+        <MapSection canPublish={Boolean(user)} />
         <SignalsSection />
       </main>
       <SiteFooter />

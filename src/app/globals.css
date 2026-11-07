@@ -71,10 +71,13 @@ a { color: inherit; text-decoration: none; }
 .section-heading .eyebrow { margin-bottom: 14px; }
 .section-heading h2 { max-width: 650px; margin: 0; font-size: clamp(36px, 4vw, 60px); line-height: 1.05; letter-spacing: -.055em; }
 .phase-badge { flex: none; padding: 10px 14px; border: 1px solid #715792; border-radius: 30px; color: var(--accent); font-size: 12px; text-transform: uppercase; letter-spacing: .09em; }
+.publish-open { flex: none; padding: 11px 16px; border: 1px solid #a987d3; border-radius: 8px; background: #9d70d1; color: #16101e; font: inherit; font-size: 13px; font-weight: 800; text-decoration: none; cursor: pointer; }
+.publish-open:hover, .publish-open:focus-visible { background: #c5a8ff; }
 .map-intro { max-width: 680px; margin: -8px 0 28px; color: var(--muted); line-height: 1.55; }
 .map-experience { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(330px, .8fr); min-height: 590px; overflow: hidden; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
 .map-panel { min-width: 0; min-height: 590px; position: relative; overflow: hidden; background: #292731; }
 .map-canvas { width: 100%; height: 100%; min-height: 590px; background: #292731; }
+.map-canvas.is-picking { cursor: crosshair; }
 .map-canvas.maplibregl-map { font-family: Arial, Helvetica, sans-serif; }
 .map-canvas .maplibregl-ctrl-attrib { background: #191a20df; color: #e2e0e8; font-size: 10px; }
 .map-canvas .maplibregl-ctrl-attrib a { color: #d1bbff; }
@@ -119,6 +122,26 @@ a { color: inherit; text-decoration: none; }
 .map-list-item-copy > span { color: var(--muted); font-size: 11px; line-height: 1.3; }
 .map-list-arrow { color: var(--accent); font-size: 15px; }
 .map-list-note { margin: auto 22px 0; padding: 18px 0 22px; color: var(--muted); font-size: 11px; line-height: 1.5; }
+.publish-form { display: grid; gap: 13px; margin: 20px 12px; padding: 18px; border: 1px solid #705b89; border-radius: 10px; background: #25212f; }
+.publish-form-heading { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.publish-form-heading h3 { margin: 0; font-size: 20px; }
+.publish-form-heading button { border: 0; background: transparent; color: var(--text); font-size: 24px; cursor: pointer; }
+.publish-form p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.publish-location { padding: 11px; border: 1px dashed #8a73a6; border-radius: 6px; color: #ddcaf6; font-size: 12px; }
+.publish-form label { display: grid; gap: 6px; color: var(--text); font-size: 12px; font-weight: 700; }
+.publish-form input, .publish-form select { width: 100%; min-height: 40px; padding: 8px 10px; border: 1px solid #665875; border-radius: 6px; background: #1b1823; color: var(--text); font: inherit; color-scheme: dark; }
+.publish-times { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.publish-form .publish-checkbox { display: flex; align-items: center; gap: 8px; }
+.publish-checkbox input { width: 16px; min-height: 16px; }
+.publish-form .publish-form-note { font-size: 11px; }
+.publish-form .publish-error { padding: 9px; border-radius: 5px; background: #442731; color: #ffbac3; }
+.publish-primary, .publish-candidate button { padding: 11px 14px; border: 0; border-radius: 6px; background: #b18ae1; color: #1a1321; font: inherit; font-size: 12px; font-weight: 800; cursor: pointer; }
+.publish-primary:disabled, .publish-candidate button:disabled { opacity: .55; cursor: wait; }
+.publish-secondary { padding: 8px; border: 0; background: transparent; color: #d9c3f5; font: inherit; font-size: 12px; cursor: pointer; }
+.publish-candidates { display: grid; gap: 10px; padding-top: 12px; border-top: 1px solid #51445f; }
+.publish-candidates h4 { margin: 0; font-size: 14px; }
+.publish-candidate { display: grid; gap: 6px; padding: 11px; border: 1px solid #665875; border-radius: 6px; font-size: 12px; }
+.publish-candidate span:last-of-type { color: var(--muted); }
 
 .signals { padding-top: 24px; }
 .signal-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }

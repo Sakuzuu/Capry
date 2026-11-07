@@ -26,7 +26,9 @@ La aplicación necesita ejecución de servidor: `output: "export"` se retiró en
 
 ## Mapa de eventos
 
-La portada consulta `GET /api/events` al cargar el mapa y al moverlo. La función `public.visible_events_in_bounds` filtra en PostgreSQL por área, estado y horario de Quito; agrupa publicaciones conectadas a menos de 250 metros cuando comparten el mismo horario. La página muestra un estado vacío hasta que haya eventos reales. Seleccionar un marcador o un elemento de la lista abre la misma ficha. Las coordenadas se guardan como `latitude` y `longitude` y se convierten al orden longitud–latitud de MapLibre en `src/features/map/coordinates.ts`.
+La portada consulta `GET /api/events` al cargar el mapa y al moverlo. La función `public.visible_events_in_bounds` filtra en PostgreSQL por área, estado y horario de Quito. La página muestra un estado vacío hasta que haya eventos reales. Seleccionar un marcador o un elemento de la lista abre la misma ficha. Las coordenadas se guardan como `latitude` y `longitude` y se convierten al orden longitud–latitud de MapLibre en `src/features/map/coordinates.ts`.
+
+Una persona autenticada puede seleccionar un punto del mapa y publicar mediante `POST /api/events/publish`. La función `public.publish_party` valida el horario, comprueba candidatas a 250 metros y serializa la comprobación final con la escritura. Confirmar que es la misma fiesta añade una contribución reversible a `event_contributions`; elegir que es distinta crea una ficha independiente, incluso con el mismo horario. La base obtiene la identidad de la sesión y no acepta un identificador de usuario enviado por el navegador.
 
 El mapa usa el estilo oscuro de OpenFreeMap, basado en datos de OpenStreetMap, con atribución visible y sin clave de acceso.
 Los colores de fondo, vías y nombres se ajustan en `src/features/map/map-theme.ts` para mantener la paleta morada de Capry.
@@ -34,4 +36,4 @@ El archivo `public/maplibre-gl-worker.mjs` corresponde a la versión fijada de M
 
 ## Datos y permisos
 
-Las migraciones de `supabase/migrations` están aplicadas al proyecto Capry. La API pública `GET /api/events` devuelve datos de eventos y conteos agregados, sin identificadores de cuentas. La escritura futura debe obtener la identidad con `getCurrentUser()` en el servidor y dejar que las políticas RLS vuelvan a comprobar la propiedad de cada fila.
+Las migraciones de `supabase/migrations` están aplicadas al proyecto Capry. La API pública `GET /api/events` devuelve datos de eventos y conteos agregados, sin identificadores de cuentas. La escritura obtiene la identidad con `supabase.auth.getUser()` en el servidor y la función de base de datos la verifica de nuevo.

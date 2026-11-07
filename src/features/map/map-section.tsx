@@ -6,6 +6,8 @@ import { SectionHeading } from "@/components/section-heading";
 import { toMapLngLat } from "./coordinates";
 import { applyCapryMapTheme } from "./map-theme";
 import { crowdLabel, crowdLevel, eventName, eventSchedule, plannedLevel, quitoCenter, type LiveEvent } from "./live-event";
+import { PublishForm } from "./publish-form";
+import type { Coordinates } from "./coordinates";
 
 const mapStyle = "https://tiles.openfreemap.org/styles/dark";
 const quitoTime = new Intl.DateTimeFormat("es-EC", { timeZone: "America/Guayaquil", hour: "2-digit", minute: "2-digit" });
@@ -30,18 +32,23 @@ function EventSummary({ event, onClose }: { event: LiveEvent; onClose: () => voi
   );
 }
 
-export function MapSection() {
+export function MapSection({ canPublish }: { canPublish: boolean }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
   const markerClassRef = useRef<typeof import("maplibre-gl").Marker | null>(null);
   const markersRef = useRef<Map<string, Marker>>(new Map());
   const selectedIdRef = useRef<string | null>(null);
   const requestRef = useRef<AbortController | null>(null);
+  const reloadEventsRef = useRef<(() => void) | null>(null);
+  const publishingRef = useRef(false);
+  const pickMarkerRef = useRef<Marker | null>(null);
   const [events, setEvents] = useState<LiveEvent[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [mapError, setMapError] = useState(false);
   const [eventsError, setEventsError] = useState(false);
+  const [publishing, setPublishing] = useState(false);
+  const [pickedPoint, setPickedPoint] = useState<Coordinates | null>(null);
   const selectedEvent = events.find((event) => event.id === selectedId);
 
   useEffect(() => {
@@ -82,10 +89,14 @@ export function MapSection() {
         center: toMapLngLat(quitoCenter), zoom: 12,
       });
       mapRef.current = map;
+      reloadEventsRef.current = () => { void loadEvents(map); };
       map.scrollZoom.disable();
       map.addControl(new maplibre.NavigationControl({ showCompass: false }), "top-right");
       map.once("load", () => { applyCapryMapTheme(map); void loadEvents(map); });
       map.on("moveend", () => { clearTimeout(timer); timer = setTimeout(() => void loadEvents(map), 250); });
+      map.on("click", (event) => {
+        if (publishingRef.current) setPickedPoint({ latitude: event.lngLat.lat, longitude: event.lngLat.lng });
+      });
       map.on("error", () => { if (!map.loaded()) setMapError(true); });
     }
     void mountMap().catch(() => { if (!disposed) setMapError(true); });
@@ -93,11 +104,26 @@ export function MapSection() {
       disposed = true;
       clearTimeout(timer);
       requestRef.current?.abort();
+      reloadEventsRef.current = null;
       markers.clear();
+      pickMarkerRef.current?.remove();
       mapRef.current?.remove();
       mapRef.current = null;
     };
   }, []);
+
+  useEffect(() => {
+    publishingRef.current = publishing;
+  }, [publishing]);
+
+  useEffect(() => {
+    pickMarkerRef.current?.remove();
+    pickMarkerRef.current = null;
+    if (publishing && pickedPoint && mapRef.current && markerClassRef.current) {
+      pickMarkerRef.current = new markerClassRef.current({ color: "#c5a8ff" })
+        .setLngLat(toMapLngLat(pickedPoint)).addTo(mapRef.current);
+    }
+  }, [publishing, pickedPoint]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -134,17 +160,25 @@ export function MapSection() {
     mapRef.current?.flyTo({ center: toMapLngLat(event), zoom: Math.max(mapRef.current.getZoom(), 13), duration: 600, essential: true });
   }
 
+  function finishPublishing(id: string, point: Coordinates) {
+    setPublishing(false);
+    setPickedPoint(null);
+    setSelectedId(id);
+    mapRef.current?.jumpTo({ center: toMapLngLat(point), zoom: Math.max(mapRef.current.getZoom(), 13) });
+    reloadEventsRef.current?.();
+  }
+
   return (
     <section className="map-section" id="mapa" aria-labelledby="map-title">
-      <SectionHeading eyebrow="Explora la ciudad" id="map-title" title="El mapa de las fiestas" accessory={<span className="phase-badge">Eventos de la comunidad</span>} />
-      <p className="map-intro">Descubre fiestas visibles en Quito según la zona del mapa. Las publicaciones cercanas con el mismo horario aparecen juntas.</p>
+      <SectionHeading eyebrow="Explora la ciudad" id="map-title" title="El mapa de las fiestas" accessory={canPublish ? <button className="publish-open" type="button" onClick={() => setPublishing((value) => !value)}>{publishing ? "Cerrar publicación" : "Publicar una fiesta"}</button> : <a className="publish-open" href="/acceder">Inicia sesión para publicar</a>} />
+      <p className="map-intro">Descubre fiestas visibles en Quito según la zona del mapa. Si encuentras una fiesta cercana, podrás confirmar si es la misma o publicar una distinta.</p>
       <div className="map-experience">
         <div className="map-panel">
-          <div ref={containerRef} className="map-canvas" role="application" aria-label="Mapa de fiestas en Quito" />
+          <div ref={containerRef} className={`map-canvas${publishing ? " is-picking" : ""}`} role="application" aria-label="Mapa de fiestas en Quito" />
           {mapError && <p className="map-error">El mapa no pudo cargarse. Puedes explorar los eventos desde la lista.</p>}
           {eventsError && <p className="map-error">No se pudieron cargar los eventos. Mueve el mapa para reintentar.</p>}
           {selectedEvent ? <EventSummary event={selectedEvent} onClose={() => setSelectedId(null)} /> :
-            <p className="map-hint">{loading ? "Buscando fiestas…" : events.length ? "Selecciona una fiesta del mapa o la lista" : "Aún no hay fiestas visibles en esta zona"}</p>}
+            <p className="map-hint">{publishing ? pickedPoint ? "Lugar elegido. Completa el formulario." : "Toca el mapa para elegir el lugar." : loading ? "Buscando fiestas…" : events.length ? "Selecciona una fiesta del mapa o la lista" : "Aún no hay fiestas visibles en esta zona"}</p>}
         </div>
         <aside className="map-list" aria-label="Lista de fiestas visibles">
           <div className="map-list-heading"><div><span>EN ESTA ZONA</span><h3>Explora las fiestas</h3></div><span className="map-list-count">{events.length} {events.length === 1 ? "fiesta" : "fiestas"}</span></div>
@@ -158,6 +192,7 @@ export function MapSection() {
               </button>
             ))}
           </div>
+          {publishing && <PublishForm point={pickedPoint} onDone={finishPublishing} onClose={() => { setPublishing(false); setPickedPoint(null); }} />}
           <p className="map-list-note">Los niveles de aforo se basan en reportes de las últimas dos horas.</p>
         </aside>
       </div>
