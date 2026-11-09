@@ -30,10 +30,12 @@ La portada consulta `GET /api/events` al cargar el mapa y al moverlo. La funció
 
 Una persona autenticada puede seleccionar un punto del mapa y publicar mediante `POST /api/events/publish`. La función `public.publish_party` valida el horario, comprueba candidatas a 250 metros y serializa la comprobación final con la escritura. Confirmar que es la misma fiesta añade una contribución reversible a `event_contributions`; elegir que es distinta crea una ficha independiente, incluso con el mismo horario. La base obtiene la identidad de la sesión y no acepta un identificador de usuario enviado por el navegador.
 
+Cada fiesta tiene una ficha compartible en `/evento/{id}`. `GET /api/events/{id}` devuelve sus conteos y la respuesta propia si hay sesión. `POST /api/events/{id}` acepta `{"action":"attendance","planned":true|false}` para añadir o retirar la asistencia de forma idempotente, `{"action":"crowd","level":"low"|"medium"|"full"}` para crear o actualizar el único reporte de la cuenta, y `{"action":"remove_crowd"}` para retirarlo. Los totales siempre se consultan desde las filas de la base. El aforo se calcula en el servidor con reportes de las últimas dos horas; si hay empate, prevalece el nivel más alto. La ficha conserva la hora del último reporte aunque ya no sea reciente. Un evento en curso sin hora de fin sale del mapa tras dos horas sin nuevos reportes, pero el enlace a su ficha sigue disponible. Un reporte nuevo desde esa ficha puede devolverlo al mapa.
+
 El mapa usa el estilo oscuro de OpenFreeMap, basado en datos de OpenStreetMap, con atribución visible y sin clave de acceso.
 Los colores de fondo, vías y nombres se ajustan en `src/features/map/map-theme.ts` para mantener la paleta morada de Capry.
 El archivo `public/maplibre-gl-worker.mjs` corresponde a la versión fijada de MapLibre GL JS; al actualizar esa dependencia, copia de nuevo su worker desde `node_modules/maplibre-gl/dist/`.
 
 ## Datos y permisos
 
-Las migraciones de `supabase/migrations` están aplicadas al proyecto Capry. La API pública `GET /api/events` devuelve datos de eventos y conteos agregados, sin identificadores de cuentas. La escritura obtiene la identidad con `supabase.auth.getUser()` en el servidor y la función de base de datos la verifica de nuevo.
+Las migraciones de `supabase/migrations` están aplicadas al proyecto Capry. Las API públicas devuelven datos de eventos y conteos agregados, sin identificadores de cuentas. La escritura obtiene la identidad con `supabase.auth.getUser()` en el servidor; las políticas por fila impiden responder por otra cuenta o fuera del horario permitido.

@@ -4,10 +4,10 @@ import Link from "next/link";
 export function SiteHeader({ email }: { email?: string }) {
   return (
     <header className="site-header">
-      <a className="brand" href="#inicio" aria-label="Capry, ir al inicio">
+      <Link className="brand" href="/" aria-label="Capry, ir al inicio">
         <span className="brand-mark" aria-hidden="true">C</span>
         <span>capry<span className="brand-dot">.</span></span>
-      </a>
+      </Link>
       <div className="header-actions">
         <span className="location-label"><span aria-hidden="true">●</span> Quito, Ecuador</span>
         {email ? (

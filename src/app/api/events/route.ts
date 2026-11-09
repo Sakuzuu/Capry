@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { toPublicEvent } from "@/lib/events/public-event";
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +22,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "No se pudieron cargar los eventos." }, { status: 503 });
   }
 
-  return NextResponse.json(data ?? [], {
+  return NextResponse.json((data ?? []).map(toPublicEvent), {
     headers: { "Cache-Control": "private, no-store" },
   });
 }

@@ -9,13 +9,17 @@ export type LiveEvent = {
   start_time: string;
   end_time: string | null;
   end_day_offset: number;
-  status: "planned" | "active";
+  status: "planned" | "active" | "ended" | "cancelled" | "archived";
   planned_count: number;
   low_count: number;
   medium_count: number;
   full_count: number;
   last_report_at: string | null;
   publication_count: number;
+  report_count: number;
+  crowd_level: CrowdLevel | null;
+  accepts_attendance: boolean;
+  accepts_crowd: boolean;
 };
 export const quitoCenter: Coordinates = { latitude: -0.196, longitude: -78.483 };
 export const eventName = (event: LiveEvent) => event.publication_count > 1
@@ -26,9 +30,6 @@ export const eventSchedule = (event: LiveEvent) => {
   return `${event.event_date ? `${event.event_date} · ` : ""}${start} – ${end}${event.end_day_offset ? " (+1 día)" : ""}`;
 };
 export const plannedLevel = (count: number): CrowdLevel => count >= 30 ? "full" : count >= 10 ? "medium" : "low";
-export const crowdLevel = (event: LiveEvent): CrowdLevel | null => {
-  const votes = [["low", event.low_count], ["medium", event.medium_count], ["full", event.full_count]] as const;
-  const max = Math.max(...votes.map(([, count]) => count));
-  return max ? votes.find(([, count]) => count === max)![0] : null;
-};
+export const markerLevel = (event: LiveEvent): CrowdLevel | "none" =>
+  event.status === "planned" ? plannedLevel(event.planned_count) : event.crowd_level ?? "none";
 export const crowdLabel = (level: CrowdLevel | null) => level === "low" ? "bajo" : level === "medium" ? "medio" : level === "full" ? "full" : "sin reportes";

@@ -5,33 +5,12 @@ import type { Map as MapLibreMap, Marker } from "maplibre-gl";
 import { SectionHeading } from "@/components/section-heading";
 import { toMapLngLat } from "./coordinates";
 import { applyCapryMapTheme } from "./map-theme";
-import { crowdLabel, crowdLevel, eventName, eventSchedule, plannedLevel, quitoCenter, type LiveEvent } from "./live-event";
+import { eventName, eventSchedule, markerLevel, quitoCenter, type LiveEvent } from "./live-event";
+import { EventCard } from "./event-card";
 import { PublishForm } from "./publish-form";
 import type { Coordinates } from "./coordinates";
 
 const mapStyle = "https://tiles.openfreemap.org/styles/dark";
-const quitoTime = new Intl.DateTimeFormat("es-EC", { timeZone: "America/Guayaquil", hour: "2-digit", minute: "2-digit" });
-
-function EventSummary({ event, onClose }: { event: LiveEvent; onClose: () => void }) {
-  const crowd = crowdLevel(event);
-  const reservation = plannedLevel(event.planned_count);
-  return (
-    <article className="map-event-summary" aria-label={`Ficha de ${eventName(event)}`}>
-      <div className="map-event-summary-top">
-        <span className="map-event-kicker">{event.status === "planned" ? "Fiesta futura" : "Fiesta en curso"}</span>
-        <button type="button" className="map-summary-close" onClick={onClose} aria-label="Cerrar ficha">×</button>
-      </div>
-      <h3>{eventName(event)}</h3>
-      <p className="map-event-time">{eventSchedule(event)}</p>
-      <div className="map-event-signals">
-        <span className={`map-planned-level level-${reservation}`}>Reserva {crowdLabel(reservation)} · <strong>{event.planned_count}</strong> planean ir</span>
-        <span className={`map-crowd-level level-${crowd ?? "none"}`}>Aforo {crowdLabel(crowd)}</span>
-      </div>
-      {event.last_report_at && <p className="map-event-report">Último reporte: {quitoTime.format(new Date(event.last_report_at))} (hora de Quito)</p>}
-    </article>
-  );
-}
-
 export function MapSection({ canPublish }: { canPublish: boolean }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
@@ -134,7 +113,7 @@ export function MapSection({ canPublish }: { canPublish: boolean }) {
     for (const event of events) {
       const element = document.createElement("button");
       element.type = "button";
-      element.className = `party-map-pin level-${crowdLevel(event) ?? "none"}${event.id === selectedIdRef.current ? " is-selected" : ""}`;
+      element.className = `party-map-pin level-${markerLevel(event)}${event.id === selectedIdRef.current ? " is-selected" : ""}`;
       element.setAttribute("aria-label", `Ver ${eventName(event)}`);
       const face = document.createElement("span");
       face.className = "party-map-pin-face";
@@ -177,7 +156,7 @@ export function MapSection({ canPublish }: { canPublish: boolean }) {
           <div ref={containerRef} className={`map-canvas${publishing ? " is-picking" : ""}`} role="application" aria-label="Mapa de fiestas en Quito" />
           {mapError && <p className="map-error">El mapa no pudo cargarse. Puedes explorar los eventos desde la lista.</p>}
           {eventsError && <p className="map-error">No se pudieron cargar los eventos. Mueve el mapa para reintentar.</p>}
-          {selectedEvent ? <EventSummary event={selectedEvent} onClose={() => setSelectedId(null)} /> :
+          {selectedEvent ? <EventCard key={selectedEvent.id} initialEvent={selectedEvent} canInteract={canPublish} onClose={() => setSelectedId(null)} onUpdate={() => reloadEventsRef.current?.()} /> :
             <p className="map-hint">{publishing ? pickedPoint ? "Lugar elegido. Completa el formulario." : "Toca el mapa para elegir el lugar." : loading ? "Buscando fiestas…" : events.length ? "Selecciona una fiesta del mapa o la lista" : "Aún no hay fiestas visibles en esta zona"}</p>}
         </div>
         <aside className="map-list" aria-label="Lista de fiestas visibles">
@@ -186,7 +165,7 @@ export function MapSection({ canPublish }: { canPublish: boolean }) {
             {!loading && !events.length && <p className="map-list-empty">No hay fiestas visibles aquí. Mueve el mapa para explorar otra zona.</p>}
             {events.map((event) => (
               <button className={`map-list-item${event.id === selectedId ? " is-selected" : ""}`} type="button" key={event.id} onClick={() => selectEvent(event)} aria-pressed={event.id === selectedId}>
-                <span className={`map-list-dot level-${crowdLevel(event) ?? "none"}`} aria-hidden="true" />
+                <span className={`map-list-dot level-${markerLevel(event)}`} aria-hidden="true" />
                 <span className="map-list-item-copy"><strong>{eventName(event)}</strong><span>{eventSchedule(event)}</span></span>
                 <span className="map-list-arrow" aria-hidden="true">↗</span>
               </button>
