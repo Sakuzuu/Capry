@@ -66,7 +66,10 @@ export default async function AccessPage({
             )}
           </div>
         </div>
-        <div className="access-visual" aria-hidden="true" />
+        <div className="access-visual" aria-hidden="true">
+          <div className="access-visual-top">CAPRY <span>/</span> QUITO</div>
+          <div className="access-visual-bottom"><span>DESCUBRE LA NOCHE</span><strong>La ciudad está llena<br />de posibilidades.</strong></div>
+        </div>
       </main>
     </div>
   );

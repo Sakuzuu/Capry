@@ -8,6 +8,10 @@ export function SiteHeader({ email }: { email?: string }) {
         <span className="brand-mark" aria-hidden="true">C</span>
         <span>capry<span className="brand-dot">.</span></span>
       </Link>
+      <nav className="site-nav" aria-label="Navegación principal">
+        <Link href="/#mapa">Explorar mapa</Link>
+        <Link href="/#como-funciona">Cómo funciona</Link>
+      </nav>
       <div className="header-actions">
         <span className="location-label"><span aria-hidden="true">●</span> Quito, Ecuador</span>
         {email ? (
