@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { toPublicEvent } from "@/lib/events/public-event";
 
+import { withEventDesigns } from "@/lib/events/designs";
+
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
@@ -22,7 +24,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "No se pudieron cargar los eventos." }, { status: 503 });
   }
 
-  return NextResponse.json((data ?? []).map(toPublicEvent), {
+  let events;
+  try { events = await withEventDesigns(supabase, (data ?? []).map(toPublicEvent)); }
+  catch { return NextResponse.json({ error: "No se pudieron cargar las portadas." }, { status: 503 }); }
+  return NextResponse.json(events, {
     headers: { "Cache-Control": "private, no-store" },
   });
 }

@@ -3,6 +3,8 @@ import type { Coordinates } from "./coordinates";
 export type CrowdLevel = "low" | "medium" | "full";
 export type LiveEvent = {
   id: string;
+  title?: string | null;
+  cover_url?: string;
   latitude: number;
   longitude: number;
   event_date: string | null;
@@ -22,8 +24,8 @@ export type LiveEvent = {
   accepts_crowd: boolean;
 };
 export const quitoCenter: Coordinates = { latitude: -0.196, longitude: -78.483 };
-export const eventName = (event: LiveEvent) => event.publication_count > 1
-  ? `Fiesta compartida · ${event.publication_count} publicaciones` : "Fiesta en Quito";
+export const eventName = (event: LiveEvent) => event.title || (event.publication_count > 1
+  ? `Fiesta compartida · ${event.publication_count} publicaciones` : "Fiesta en Quito");
 export const eventSchedule = (event: LiveEvent) => {
   const start = event.start_time.slice(0, 5);
   const end = event.end_time ? event.end_time.slice(0, 5) : "fin indefinido";

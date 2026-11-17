@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { crowdLabel, eventName, eventSchedule, plannedLevel, type CrowdLevel, type LiveEvent } from "./live-event";
 
+import { EventQr } from "@/features/events/event-qr";
+
 type Mine = { planned: boolean; crowdLevel: CrowdLevel | null } | null;
 type Response = { event: LiveEvent; mine: Mine; error?: string };
 const quitoDateTime = new Intl.DateTimeFormat("es-EC", {
@@ -22,6 +24,7 @@ export function EventCard({ initialEvent, canInteract, onClose, onUpdate }: {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
+  const [showQr, setShowQr] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -69,11 +72,19 @@ export function EventCard({ initialEvent, canInteract, onClose, onUpdate }: {
   const canAttend = event.accepts_attendance || Boolean(mine?.planned);
   const canRespond = canAttend || event.accepts_crowd || Boolean(mine?.crowdLevel);
   return (
+    <>
     <article className={`map-event-summary${onClose ? "" : " event-page-card"}`} aria-label={`Ficha de ${eventName(event)}`}>
+      <div className="event-cover" aria-hidden="true">
+        {/* Uploaded photos use their original public Storage URL. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={event.cover_url || "/party-night-out.jpeg"} alt="" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "/party-night-out.jpeg"; }} />
+      </div>
+      <div className="event-card-content">
       <div className="map-event-summary-top">
         <span className="map-event-kicker">{event.status === "planned" && event.accepts_attendance ? "Fiesta futura" : event.status === "active" && event.accepts_crowd ? "Fiesta en curso" : "Fiesta finalizada"}</span>
         {onClose && <button type="button" className="map-summary-close" onClick={onClose} aria-label="Cerrar ficha">×</button>}
       </div>
+      <span className="event-card-brand">CAPRY / QUITO</span>
       <h3>{eventName(event)}</h3>
       <p className="map-event-time">{eventSchedule(event)} · hora de Quito</p>
       <div className="map-event-signals">
@@ -100,8 +111,12 @@ export function EventCard({ initialEvent, canInteract, onClose, onUpdate }: {
       {error && <p className="event-response-error" role="alert">{error}</p>}
       <div className="event-share-actions">
         <Link href={`/evento/${event.id}`}>Ver ficha y enlace</Link>
+        <button type="button" onClick={() => setShowQr(true)}>Ver QR ↗</button>
         <button type="button" onClick={() => void copyLink()}>{copied ? "Enlace copiado" : "Copiar enlace"}</button>
       </div>
+      </div>
     </article>
+    {showQr && <EventQr id={event.id} name={eventName(event)} onClose={() => setShowQr(false)} />}
+    </>
   );
 }

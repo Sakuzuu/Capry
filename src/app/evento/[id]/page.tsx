@@ -6,6 +6,8 @@ import { EventCard } from "@/features/map/event-card";
 import { toPublicEvent } from "@/lib/events/public-event";
 import { createClient } from "@/lib/supabase/server";
 
+import { withEventDesigns } from "@/lib/events/designs";
+
 export const dynamic = "force-dynamic";
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -19,7 +21,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
   ]);
   if (details.error) throw new Error("No se pudo cargar el evento.");
   if (!details.data?.[0]) notFound();
-  const event = toPublicEvent(details.data[0]);
+  const [event] = await withEventDesigns(supabase, [toPublicEvent(details.data[0])]);
   const user = !auth.error && auth.data.user && !auth.data.user.is_anonymous ? auth.data.user : null;
 
   return <div className="site-shell">

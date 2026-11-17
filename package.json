@@ -10,19 +10,22 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@fontsource/manrope": "5.3.0",
     "@supabase/ssr": "0.12.7",
     "@supabase/supabase-js": "2.118.0",
     "maplibre-gl": "6.16.0",
-    "next": "16.4.3",
+    "next": "16.4.6",
+    "qrcode": "1.5.4",
     "react": "19.3.1",
     "react-dom": "19.3.1"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
+    "@types/qrcode": "1.5.6",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "eslint": "^9.0.0",
-    "eslint-config-next": "16.4.3",
+    "eslint-config-next": "16.4.6",
     "typescript": "^5.9.3"
   },
   "packageManager": "pnpm@11.25.0"

@@ -8,6 +8,8 @@ const datePattern = /^\d{4}-\d{2}-\d{2}$/;
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export async function POST(request: NextRequest) {
+  try { if (new URL(request.headers.get("origin") ?? "").host !== request.headers.get("host")) throw new Error(); }
+  catch { return NextResponse.json({ error: "Solicitud no permitida." }, { status: 403 }); }
   if (request.headers.get("content-type")?.split(";")[0] !== "application/json") {
     return NextResponse.json({ error: "Formato inválido." }, { status: 415 });
   }
@@ -19,6 +21,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Datos inválidos." }, { status: 400 });
   }
   const { latitude, longitude, eventDate, startTime, endTime, endDayOffset, status, action, candidateId, allowSeparate } = input;
+  const title = typeof input.title === "string" ? input.title.trim() : "";
+  const preset = input.coverPreset ?? "night";
+  const coverPath = input.coverPath ?? null;
+  if (title.length > 80 || !["night", "aurora", "pulse"].includes(String(preset)) ||
+    (coverPath !== null && (typeof coverPath !== "string" || !/^[0-9a-f-]{36}\.(jpg|png|webp)$/.test(coverPath)))) {
+    return NextResponse.json({ error: "Revisa el nombre y la portada." }, { status: 400 });
+  }
   const parsedDate = typeof eventDate === "string" && datePattern.test(eventDate)
     ? new Date(`${eventDate}T00:00:00.000Z`) : null;
   const validDate = eventDate === null || eventDate === "" ||
@@ -43,7 +52,8 @@ export async function POST(request: NextRequest) {
   if (authError || !user || user.is_anonymous) {
     return NextResponse.json({ error: "Inicia sesión para publicar." }, { status: 401 });
   }
-  const { data, error } = await supabase.rpc("publish_party", {
+  const { data, error } = await supabase.rpc("publish_designed_party", {
+    p_title: title || null, p_cover_preset: preset, p_cover_path: coverPath,
     p_latitude: latitude, p_longitude: longitude,
     p_event_date: eventDate || null, p_start_time: startTime,
     p_end_time: endTime || null, p_end_day_offset: endDayOffset,

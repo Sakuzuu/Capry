@@ -3,6 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { toPublicEvent } from "@/lib/events/public-event";
 import type { CrowdLevel, LiveEvent } from "@/features/map/live-event";
 
+import { withEventDesigns } from "@/lib/events/designs";
+
 export const dynamic = "force-dynamic";
 
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -12,7 +14,7 @@ type Client = Awaited<ReturnType<typeof createClient>>;
 async function readEvent(supabase: Client, id: string): Promise<LiveEvent | null> {
   const { data, error } = await supabase.rpc("event_details", { p_event_id: id });
   if (error) throw error;
-  return data?.[0] ? toPublicEvent(data[0]) : null;
+  return data?.[0] ? (await withEventDesigns(supabase, [toPublicEvent(data[0])]))[0] : null;
 }
 
 async function readOwnResponse(supabase: Client, id: string, userId: string) {

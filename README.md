@@ -39,3 +39,11 @@ El archivo `public/maplibre-gl-worker.mjs` corresponde a la versión fijada de M
 ## Datos y permisos
 
 Las migraciones de `supabase/migrations` están aplicadas al proyecto Capry. Las API públicas devuelven datos de eventos y conteos agregados, sin identificadores de cuentas. La escritura obtiene la identidad con `supabase.auth.getUser()` en el servidor; las políticas por fila impiden responder por otra cuenta o fuera del horario permitido.
+
+## Diseño y portadas (PB2)
+
+La tipografía Manrope se sirve desde el propio proyecto. La publicación se abre en un diálogo accesible con tres pasos: ubicación, horario de Quito y portada. El formulario permite un nombre opcional, tres portadas incluidas o una foto JPG, PNG o WebP de hasta 3 MB. Las portadas propias se guardan en el bucket público `event-covers`; los nombres de archivo son aleatorios y no incluyen identificadores de cuentas. El servidor comprueba tamaño, formato e identidad. Las imágenes ya publicadas quedan protegidas contra la eliminación de borradores.
+
+`publish_designed_party` guarda la fiesta y su presentación en la misma transacción. Si se confirma una fiesta existente, conserva su nombre y portada. `event_designs` solo expone la presentación pública; las cuentas no pueden modificarla directamente. Las consultas del mapa y de la ficha añaden las portadas en una sola consulta por lote. Los eventos anteriores conservan la portada predeterminada.
+
+Cada ficha ofrece un QR descargable en PNG, generado localmente en el navegador con su enlace absoluto. Al cambiar de dominio, los nuevos QR usan el dominio donde se abre la ficha. No se envían los enlaces a servicios de QR externos.

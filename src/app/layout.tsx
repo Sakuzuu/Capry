@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import "maplibre-gl/dist/maplibre-gl.css";
+import "@fontsource/manrope/latin-400.css";
+import "@fontsource/manrope/latin-500.css";
+import "@fontsource/manrope/latin-600.css";
 import "./globals.css";
 import "./polish.css";
+import "./refinement.css";
 
 export const metadata: Metadata = {
   title: "Capry | Fiestas en Quito",
