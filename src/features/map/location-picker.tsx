@@ -39,6 +39,7 @@ export function LocationPicker({ point, onPick }: { point: Coordinates | null; o
   useEffect(() => {
     initialPoint.current = point;
     if (point && mapRef.current && markerRef.current) markerRef.current.setLngLat(toMapLngLat(point)).addTo(mapRef.current);
+    else if (!point) markerRef.current?.remove();
   }, [point]);
   return <div className="location-picker">
     <div ref={container} className="location-picker-map map-canvas" role="application" aria-label="Toca el mapa para ubicar la fiesta" />

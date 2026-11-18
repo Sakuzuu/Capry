@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { crowdLabel, eventName, eventSchedule, plannedLevel, type CrowdLevel, type LiveEvent } from "./live-event";
 
+import { Icon } from "@/components/icon";
 import { EventQr } from "@/features/events/event-qr";
 
 type Mine = { planned: boolean; crowdLevel: CrowdLevel | null } | null;
@@ -18,9 +19,11 @@ const crowdOptions: { level: CrowdLevel; label: string }[] = [
 export function EventCard({ initialEvent, canInteract, onClose, onUpdate }: {
   initialEvent: LiveEvent; canInteract: boolean; onClose?: () => void; onUpdate?: (event: LiveEvent) => void;
 }) {
+  const isPreview = Boolean(onClose);
+  const allowResponses = canInteract && !isPreview;
   const [event, setEvent] = useState(initialEvent);
   const [mine, setMine] = useState<Mine>(null);
-  const [loadingMine, setLoadingMine] = useState(canInteract);
+  const [loadingMine, setLoadingMine] = useState(allowResponses);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
@@ -36,12 +39,12 @@ export function EventCard({ initialEvent, canInteract, onClose, onUpdate }: {
       .then((data) => { if (!controller.signal.aborted) {
         setEvent(data.event);
         setMine(data.mine);
-        setLoadingMine(canInteract && !data.mine);
-        if (canInteract && !data.mine) setError("Tu sesión terminó. Vuelve a iniciar sesión para participar.");
+        setLoadingMine(allowResponses && !data.mine);
+        if (allowResponses && !data.mine) setError("Tu sesión terminó. Vuelve a iniciar sesión para participar.");
       } })
       .catch(() => { if (!controller.signal.aborted) { setError("No se pudo actualizar esta ficha."); setLoadingMine(true); } });
     return () => controller.abort();
-  }, [initialEvent.id, canInteract]);
+  }, [initialEvent.id, allowResponses]);
 
   async function respond(payload: { action: "attendance"; planned: boolean } | { action: "crowd"; level: CrowdLevel } | { action: "remove_crowd" }) {
     if (busy) return;
@@ -73,7 +76,7 @@ export function EventCard({ initialEvent, canInteract, onClose, onUpdate }: {
   const canRespond = canAttend || event.accepts_crowd || Boolean(mine?.crowdLevel);
   return (
     <>
-    <article className={`map-event-summary${onClose ? "" : " event-page-card"}`} aria-label={`Ficha de ${eventName(event)}`}>
+    <article className={`map-event-summary${isPreview ? " event-map-preview" : " event-page-card"}`} aria-label={`Ficha de ${eventName(event)}`}>
       <div className="event-cover" aria-hidden="true">
         {/* Uploaded photos use their original public Storage URL. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -82,7 +85,7 @@ export function EventCard({ initialEvent, canInteract, onClose, onUpdate }: {
       <div className="event-card-content">
       <div className="map-event-summary-top">
         <span className="map-event-kicker">{event.status === "planned" && event.accepts_attendance ? "Fiesta futura" : event.status === "active" && event.accepts_crowd ? "Fiesta en curso" : "Fiesta finalizada"}</span>
-        {onClose && <button type="button" className="map-summary-close" onClick={onClose} aria-label="Cerrar ficha">×</button>}
+        {onClose && <button type="button" className="map-summary-close" onClick={onClose} aria-label="Cerrar ficha"><Icon name="close" /></button>}
       </div>
       <span className="event-card-brand">CAPRY / QUITO</span>
       <h3>{eventName(event)}</h3>
@@ -92,31 +95,36 @@ export function EventCard({ initialEvent, canInteract, onClose, onUpdate }: {
         <span className={`map-crowd-level level-${event.crowd_level ?? "none"}`}>Aforo {crowdLabel(event.crowd_level)} · {event.report_count} {event.report_count === 1 ? "reporte" : "reportes"}</span>
       </div>
       {event.last_report_at && <p className="map-event-report">Último reporte: {quitoDateTime.format(new Date(event.last_report_at))} (Quito)</p>}
-      {canInteract && canRespond ? <div className="event-response-actions">
+      {!isPreview && (canInteract && canRespond ? <div className="event-response-actions">
         {canAttend && <button className={`event-attendance-button${mine?.planned ? " is-active" : ""}`} type="button" disabled={busy || loadingMine}
           aria-pressed={Boolean(mine?.planned)} onClick={() => void respond({ action: "attendance", planned: !mine?.planned })}>
-          {mine?.planned ? "✓ Planeo ir · retirar" : "Planeo ir"}
+          {mine?.planned && <Icon name="check" />}{mine?.planned ? "Planeo ir · retirar" : "Planeo ir"}
         </button>}
-        {event.accepts_crowd && <div className="event-crowd-actions" aria-label="Reportar aforo">
+        {event.accepts_crowd && <div className="event-crowd-actions" role="group" aria-label="Reportar aforo">
           <span>¿Cuánta gente hay?</span>
           <div>{crowdOptions.map(({ level, label }) => <button type="button" key={level}
             className={`level-${level}${mine?.crowdLevel === level ? " is-active" : ""}`}
             aria-pressed={mine?.crowdLevel === level} disabled={busy || loadingMine}
-            onClick={() => void respond({ action: "crowd", level })}>{label}</button>)}</div>
+            onClick={() => void respond({ action: "crowd", level })}>
+              <span className="crowd-option-signal" aria-hidden="true"><i /><i /><i /></span>
+              <span>{label}</span>
+              <Icon name="check" className="crowd-option-check" />
+            </button>)}</div>
         </div>}
         {mine?.crowdLevel && <button className="event-remove-report" type="button" disabled={busy || loadingMine}
           onClick={() => void respond({ action: "remove_crowd" })}>Retirar mi reporte</button>}
         {busy && <p className="event-response-status" role="status">Guardando respuesta…</p>}
-      </div> : !canInteract && canRespond ? <Link className="event-login-link" href="/acceder">Inicia sesión para participar</Link> : null}
+      </div> : !canInteract && canRespond ? <Link className="event-login-link" href="/acceder">Inicia sesión para participar</Link> : null)}
       {error && <p className="event-response-error" role="alert">{error}</p>}
       <div className="event-share-actions">
-        <Link href={`/evento/${event.id}`}>Ver ficha y enlace</Link>
-        <button type="button" onClick={() => setShowQr(true)}>Ver QR ↗</button>
-        <button type="button" onClick={() => void copyLink()}>{copied ? "Enlace copiado" : "Copiar enlace"}</button>
+        {isPreview ? <Link className="event-preview-link" href={`/evento/${event.id}`}>Ver ficha y enlace <Icon name="arrow-up-right" /></Link> : <>
+          <button type="button" onClick={() => setShowQr(true)}>Ver QR <Icon name="arrow-up-right" /></button>
+          <button type="button" onClick={() => void copyLink()}>{copied ? "Enlace copiado" : "Copiar enlace"}</button>
+        </>}
       </div>
       </div>
     </article>
-    {showQr && <EventQr id={event.id} name={eventName(event)} onClose={() => setShowQr(false)} />}
+    {!isPreview && showQr && <EventQr id={event.id} name={eventName(event)} onClose={() => setShowQr(false)} />}
     </>
   );
 }

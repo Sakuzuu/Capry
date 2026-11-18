@@ -1,3 +1,4 @@
+import { Icon } from "@/components/icon";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { signIn, signUp } from "@/app/auth/actions";
@@ -27,7 +28,7 @@ export default async function AccessPage({
           <span className="brand-mark" aria-hidden="true">C</span>
           <span>capry<span className="brand-dot">.</span></span>
         </Link>
-        <Link className="access-back" href="/">Volver al mapa <span aria-hidden="true">↗</span></Link>
+        <Link className="access-back" href="/">Volver al mapa <Icon name="arrow-up-right" /></Link>
       </header>
       <main className="access-main">
         <div className="access-content">

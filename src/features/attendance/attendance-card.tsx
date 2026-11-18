@@ -1,9 +1,11 @@
+import { Icon } from "@/components/icon";
+
 export function AttendanceCard() {
   return (
     <article className="signal-card">
       <span className="signal-number">01 / ANTES</span>
       <div className="attendance-preview" aria-hidden="true">
-        <span className="attendance-preview-icon">↗</span>
+        <span className="attendance-preview-icon"><Icon name="arrow-up-right" /></span>
         <span className="attendance-preview-line" />
         <span className="attendance-preview-point one" />
         <span className="attendance-preview-point two" />

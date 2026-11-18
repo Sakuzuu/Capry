@@ -1,3 +1,4 @@
+import { Icon } from "@/components/icon";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
@@ -27,7 +28,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
   return <div className="site-shell">
     <SiteHeader email={user?.email} />
     <main className="event-page-main">
-      <Link className="event-back" href="/#mapa">← Volver al mapa</Link>
+      <Link className="event-back" href="/#mapa"><Icon name="arrow-left" />Volver al mapa</Link>
       <div className="event-page-layout">
         <div className="event-page-intro">
           <p className="eyebrow">Fiestas en Quito</p>

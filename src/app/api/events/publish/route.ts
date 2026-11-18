@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { validateLocation, validateSchedule } from "@/lib/events/publication-validation";
 
 export const dynamic = "force-dynamic";
 
-const timePattern = /^([01]\d|2[0-3]):[0-5]\d$/;
-const datePattern = /^\d{4}-\d{2}-\d{2}$/;
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export async function POST(request: NextRequest) {
@@ -28,25 +27,20 @@ export async function POST(request: NextRequest) {
     (coverPath !== null && (typeof coverPath !== "string" || !/^[0-9a-f-]{36}\.(jpg|png|webp)$/.test(coverPath)))) {
     return NextResponse.json({ error: "Revisa el nombre y la portada." }, { status: 400 });
   }
-  const parsedDate = typeof eventDate === "string" && datePattern.test(eventDate)
-    ? new Date(`${eventDate}T00:00:00.000Z`) : null;
-  const validDate = eventDate === null || eventDate === "" ||
-    (parsedDate !== null && Number.isFinite(parsedDate.getTime()) &&
-      parsedDate.toISOString().slice(0, 10) === eventDate);
   if (typeof latitude !== "number" || typeof longitude !== "number" ||
-      !Number.isFinite(latitude) || !Number.isFinite(longitude) ||
-      latitude < -0.5 || latitude > 0.1 || longitude < -78.8 || longitude > -78.2 ||
-      typeof startTime !== "string" || !timePattern.test(startTime) ||
-      !(endTime === null || endTime === "" || (typeof endTime === "string" && timePattern.test(endTime))) ||
-      !validDate || (status !== "planned" && status !== "active") ||
+      typeof startTime !== "string" ||
+      !(endTime === null || endTime === "" || typeof endTime === "string") ||
+      !(eventDate === null || typeof eventDate === "string") ||
+      (status !== "planned" && status !== "active") ||
       (action !== "check" && action !== "create" && action !== "confirm") ||
       (endDayOffset !== 0 && endDayOffset !== 1) ||
-      (!endTime && endDayOffset !== 0) ||
-      (endTime && endDayOffset === 0 && endTime <= startTime) ||
-      (status === "planned" && !eventDate) ||
       (candidateId !== null && candidateId !== undefined && (typeof candidateId !== "string" || !uuidPattern.test(candidateId)))) {
     return NextResponse.json({ error: "Revisa la ubicación, la fecha y el horario." }, { status: 400 });
   }
+  const issue = validateLocation({ latitude, longitude }) ?? validateSchedule({
+    status, eventDate: eventDate || null, startTime, endTime: endTime || null, endDayOffset,
+  });
+  if (issue) return NextResponse.json({ error: issue.message, field: issue.field }, { status: 400 });
   const supabase = await createClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
   if (authError || !user || user.is_anonymous) {

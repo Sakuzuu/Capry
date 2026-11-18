@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Icon } from "@/components/icon";
 import { Modal } from "@/components/modal";
 
 export function EventQr({ id, name, onClose }: { id: string; name: string; onClose: () => void }) {
@@ -22,7 +23,7 @@ export function EventQr({ id, name, onClose }: { id: string; name: string; onClo
       {/* A local data URL keeps QR generation private and available without a third-party service. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img className="event-qr-image" src={image} alt={`Código QR del enlace de ${name}`} width={256} height={256} />
-      <a className="publish-primary qr-download" href={image} download={`capry-${id}.png`}>Descargar QR <span aria-hidden="true">↓</span></a>
+      <a className="publish-primary qr-download" href={image} download={`capry-${id}.png`}>Descargar QR <Icon name="arrow-down" /></a>
     </> : <p role="status">{error ? "No se pudo generar el QR. Cierra y vuelve a intentarlo." : "Preparando tu código…"}</p>}
   </Modal>;
 }

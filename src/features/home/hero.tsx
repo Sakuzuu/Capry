@@ -1,3 +1,5 @@
+import { Icon } from "@/components/icon";
+
 export function Hero() {
   return (
     <section className="hero" aria-labelledby="hero-title">
@@ -9,8 +11,8 @@ export function Hero() {
           con los reportes de quienes están allí.
         </p>
         <div className="hero-actions">
-          <a className="primary-link" href="#mapa">Explorar el mapa <span aria-hidden="true">↗</span></a>
-          <a className="hero-secondary" href="#como-funciona">Así funciona <span aria-hidden="true">↓</span></a>
+          <a className="primary-link" href="#mapa">Explorar el mapa <Icon name="arrow-up-right" /></a>
+          <a className="hero-secondary" href="#como-funciona">Así funciona <Icon name="arrow-down" /></a>
         </div>
         <div className="hero-meta" aria-label="Información de Capry">
           <span><span className="hero-meta-dot" aria-hidden="true" /> Hecho para Quito</span>

@@ -7,6 +7,8 @@ import { toMapLngLat } from "./coordinates";
 import { applyCapryMapTheme } from "./map-theme";
 import { eventName, eventSchedule, markerLevel, quitoCenter, type LiveEvent } from "./live-event";
 import { EventCard } from "./event-card";
+import { Icon } from "@/components/icon";
+import { createEventMarker } from "./map-marker";
 import { PublishForm } from "./publish-form";
 import type { Coordinates } from "./coordinates";
 
@@ -91,16 +93,7 @@ export function MapSection({ canPublish }: { canPublish: boolean }) {
     for (const marker of markersRef.current.values()) marker.remove();
     markersRef.current.clear();
     for (const event of events) {
-      const element = document.createElement("button");
-      element.type = "button";
-      element.className = `party-map-pin level-${markerLevel(event)}${event.id === selectedIdRef.current ? " is-selected" : ""}`;
-      element.setAttribute("aria-label", `Ver ${eventName(event)}`);
-      const face = document.createElement("span");
-      face.className = "party-map-pin-face";
-      face.setAttribute("aria-hidden", "true");
-      face.textContent = "♪";
-      element.appendChild(face);
-      element.addEventListener("click", () => setSelectedId(event.id));
+      const element = createEventMarker(event, event.id === selectedIdRef.current, () => setSelectedId(event.id));
       const marker = new MarkerClass({ element, anchor: "center" })
         .setLngLat(toMapLngLat(event)).addTo(map);
       markersRef.current.set(event.id, marker);
@@ -111,6 +104,7 @@ export function MapSection({ canPublish }: { canPublish: boolean }) {
     selectedIdRef.current = selectedId;
     for (const [id, marker] of markersRef.current) {
       marker.getElement()?.classList.toggle("is-selected", id === selectedId);
+      marker.getElement()?.setAttribute("aria-pressed", String(id === selectedId));
     }
   }, [selectedId, events]);
 
@@ -147,7 +141,7 @@ export function MapSection({ canPublish }: { canPublish: boolean }) {
               <button className={`map-list-item${event.id === selectedId ? " is-selected" : ""}`} type="button" key={event.id} onClick={() => selectEvent(event)} aria-pressed={event.id === selectedId}>
                 <span className={`map-list-dot level-${markerLevel(event)}`} aria-hidden="true" />
                 <span className="map-list-item-copy"><strong>{eventName(event)}</strong><span>{eventSchedule(event)}</span></span>
-                <span className="map-list-arrow" aria-hidden="true">↗</span>
+                <Icon name="arrow-up-right" className="map-list-arrow" />
               </button>
             ))}
           </div>
