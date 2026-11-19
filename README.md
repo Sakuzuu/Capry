@@ -47,3 +47,11 @@ La tipografía Manrope se sirve desde el propio proyecto. La publicación se abr
 `publish_designed_party` guarda la fiesta y su presentación en la misma transacción. Si se confirma una fiesta existente, conserva su nombre y portada. `event_designs` solo expone la presentación pública; las cuentas no pueden modificarla directamente. Las consultas del mapa y de la ficha añaden las portadas en una sola consulta por lote. Los eventos anteriores conservan la portada predeterminada.
 
 Cada ficha ofrece un QR descargable en PNG, generado localmente en el navegador con su enlace absoluto. Al cambiar de dominio, los nuevos QR usan el dominio donde se abre la ficha. No se envían los enlaces a servicios de QR externos.
+
+## Horario de publicación (PB5)
+
+En «Está ocurriendo» solo se introduce el fin opcional; el servidor registra la fecha y el inicio usando la hora de Quito. En «Será más tarde» se eligen fecha e inicio. El calendario propio ofrece Hoy, Mañana y otras fechas; las horas se escriben en formato de 24 horas y muestran su equivalencia en a. m./p. m.
+
+El día de fin se puede seleccionar antes de escribir la hora. Esa preferencia se conserva en el formulario; si no hay hora de fin, se guarda `end_time = null` y `end_day_offset = 0`. Un fin definido después de medianoche conserva explícitamente el desplazamiento de un día. El resumen indica la fecha de fin y la validación impide avanzar con horarios incompletos o inválidos.
+
+Las candidatas en curso que empezaron un día anterior también se revisan en el servidor dentro de 250 metros. Confirmar una existente conserva su horario original; no reemplaza sus datos con el inicio automático del nuevo formulario.

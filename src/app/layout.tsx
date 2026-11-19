@@ -7,6 +7,7 @@ import "./globals.css";
 import "./polish.css";
 import "./refinement.css";
 import "./map-experience.css";
+import "./publication.css";
 
 export const metadata: Metadata = {
   title: "Capry | Fiestas en Quito",

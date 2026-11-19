@@ -1,0 +1,86 @@
+/* PB5: one clear scheduling flow, with controls that belong to Capry. */
+.schedule-status button { display: flex; align-items: center; gap: 12px; padding: 17px; }
+.schedule-status-icon, .schedule-summary-icon { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border: 1px solid #d8b8ff20; border-radius: 11px; color: #c8a7f4; background: #c3a0fa09; }
+.schedule-status .schedule-status-copy { display: grid; gap: 5px; font-size: 14px; }
+.schedule-status small { font-size: 13px; line-height: 1.5; }
+.schedule-status-check { display: grid; place-items: center; flex: none; width: 19px; height: 19px; margin-left: auto; border: 1px solid #d8b8ff30; border-radius: 50%; }
+.schedule-status-check .capry-icon { width: 12px; height: 12px; }
+.schedule-status .is-active .schedule-status-check { background: #c4a1fa; border-color: #d9beff; color: #261837; }
+.schedule-live-note { display: flex; align-items: flex-start; gap: 13px; padding: 17px 18px; border: 1px solid #c9a5fa24; border-radius: 14px; background: linear-gradient(120deg,#b289ec0d,#b289ec03); }
+.schedule-live-note > .capry-icon { color: #c6a5f3; margin-top: 2px; width: 18px; height: 18px; }
+.schedule-live-note strong { font-weight: 500; font-size: 14px; }
+.publish-wizard .schedule-live-note p { margin-top: 5px; color: #b8a9c7; font-size: 13px; line-height: 1.65; }
+.schedule-clock-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 20px; }
+.schedule-clock-grid.is-live { grid-template-columns: 1fr; }
+.schedule-field { display: grid; align-content: start; gap: 10px; min-width: 0; }
+.schedule-field-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; font-size: 14px; font-weight: 500; color: #ecdef7; }
+.schedule-field-heading > span:last-child { color: #a99bb8; font-size: 12px; font-weight: 400; }
+.time-control { display: flex; align-items: center; gap: 4px; min-height: 70px; padding: 8px 15px; border: 1px solid #cba8f63b; border-radius: 14px; background: linear-gradient(135deg,#b99cde08,#110c1b78); box-shadow: inset 0 1px 0 #ffffff08,0 8px 20px #07030d12; transition: border-color .2s,box-shadow .2s; }
+.time-control > .capry-icon { width: 18px; height: 18px; color: #b49bcf; margin-right: 12px; }
+.time-control:hover { border-color: #cba8f66b; }
+.time-control:focus-within { border-color: #cfafff9c; box-shadow: 0 0 0 3px #c19afa10,inset 0 1px 0 #ffffff0d; }
+.publish-wizard .time-control input { width: 2.65ch; min-width: 2.65ch; min-height: 44px; height: 44px; padding: 5px 2px; border: 1px solid transparent; border-radius: 7px; background: transparent; box-shadow: none; text-align: center; font-size: 24px; font-weight: 400; font-variant-numeric: tabular-nums; letter-spacing: .03em; caret-color: #d7bcff; }
+.publish-wizard .time-control input::placeholder { color: #756982; font-size: 20px; }
+.publish-wizard .time-control input:focus { outline: none; border-color: #ccacfb30; background: #d4b0ff09; box-shadow: none; }
+.time-colon { margin-top: -3px; color: #9f8cb8; font-size: 22px; }
+.time-clear { display: grid; place-items: center; flex: none; margin-left: auto; padding: 6px; min-width: 32px; height: 32px; border: 1px solid #d1b4f421; border-radius: 50%; background: #d4b0ff07; color: #b6a3cb; cursor: pointer; }
+.time-clear .capry-icon { width: 14px; height: 14px; }
+.time-clear:hover { color: #f1e6ff; background: #c59bf51a; }
+.schedule-field-help { color: #ac9abc; font-size: 12px; line-height: 1.6; }
+.date-shortcuts { display: flex; gap: 8px; }
+.date-shortcuts > button { min-height: 48px; padding: 10px 17px; border: 1px solid #cba8f633; border-radius: 11px; background: #d4b0ff04; color: #c9b6de; cursor: pointer; font-size: 14px; transition: border-color .2s,background .2s; }
+.date-shortcuts > button:hover { border-color: #d8b9ff80; background: #d4b0ff0c; }
+.date-shortcuts > button[aria-pressed="true"] { border-color: #d0a9ff88; background: linear-gradient(125deg,#b78ce82b,#b78ce80b); color: #f0e1ff; box-shadow: inset 0 1px 0 #ffffff0d; }
+.date-shortcuts .date-trigger { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex: 1; text-align: left; }
+.date-trigger .capry-icon { width: 17px; height: 17px; color: #bea0e1; }
+.date-trigger .capry-icon:last-child { width: 14px; height: 14px; margin-left: auto; transition: transform .2s; }
+.date-trigger[aria-expanded="true"] .capry-icon:last-child { transform: rotate(180deg); }
+.schedule-calendar { width: min(100%,350px); padding: 17px; border: 1px solid #c5a0f24d; border-radius: 16px; background: radial-gradient(ellipse at 100% 0,#9e64c916,transparent 70%),#21192c; box-shadow: 0 14px 35px #08040f33,inset 0 1px 0 #fff1; }
+.calendar-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 15px; }
+.calendar-heading > span { text-transform: capitalize; font-size: 14px; color: #e8d7f8; }
+.calendar-heading > div { display: flex; gap: 5px; }
+.calendar-heading button { display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 1px solid #d9b6ff26; border-radius: 9px; background: #c59df208; color: #c8ace9; cursor: pointer; }
+.calendar-heading .capry-icon { width: 16px; height: 16px; }
+.calendar-week, .calendar-days { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); gap: 3px; }
+.calendar-week { margin-bottom: 6px; text-align: center; color: #ac96c3; font-size: 12px; }
+.calendar-week span { padding-block: 5px; }
+.calendar-days button { aspect-ratio: 1; min-width: 0; min-height: 36px; padding: 0; border: 1px solid transparent; border-radius: 10px; background: transparent; color: #e1d1ed; font-size: 14px; cursor: pointer; }
+.calendar-days button:hover { background: #c19af21a; border-color: #d9b6ff35; }
+.calendar-days button[aria-current="date"] { border-color: #d9b6ff50; }
+.calendar-days button[aria-pressed="true"] { color: #261536; border-color: #d9bdff; background: linear-gradient(135deg,#dbc0ff,#b88be9); box-shadow: 0 4px 12px #b080e020; }
+.calendar-heading button:disabled, .calendar-days button:disabled { opacity: .25; cursor: default; background: transparent; border-color: transparent; }
+.calendar-close { display: block; width: 100%; margin-top: 12px; padding: 9px; border: 0; border-top: 1px solid #d9b6ff16; background: transparent; color: #bca0d8; font-size: 12px; cursor: pointer; }
+.schedule-end-day { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 15px; padding-top: 4px; }
+.schedule-end-day > div > span { color: #e2d2ee; font-size: 14px; }
+.publish-wizard .schedule-end-day p { margin-top: 5px; color: #a99ab8; font-size: 12px; max-width: 310px; }
+.schedule-segments { display: flex; gap: 3px; padding: 4px; border: 1px solid #c6a0ee26; border-radius: 12px; background: #100a184d; }
+.schedule-segments button { min-height: 38px; padding: 9px 13px; border: 1px solid transparent; border-radius: 9px; background: transparent; color: #a795ba; font-size: 13px; white-space: nowrap; cursor: pointer; transition: background .2s,color .2s,border-color .2s; }
+.schedule-segments button:hover { color: #ecdafa; }
+.schedule-segments button[aria-pressed="true"] { background: linear-gradient(130deg,#c19af126,#c19af10d); border-color: #d3adff36; color: #e8d4fd; box-shadow: 0 2px 6px #08040f26,inset 0 1px 0 #ffffff0a; }
+.schedule-summary { display: flex; align-items: flex-start; gap: 14px; margin-top: 2px; padding: 18px; border: 1px solid #c8a1f62c; border-radius: 14px; background: radial-gradient(ellipse at 0 0,#bc90ff13,transparent 80%),#b88aee04; }
+.schedule-summary > div { display: grid; gap: 5px; }
+.schedule-summary strong { color: #e6d2fa; font-size: 14px; font-weight: 500; }
+.publish-wizard .schedule-summary p { font-size: 13px; color: #c6b6d5; line-height: 1.7; }
+.schedule-summary small { color: #a58cbf; font-size: 12px; line-height: 1.5; }
+.time-control.is-invalid, .date-trigger.is-invalid { border-color: #df9ba9; box-shadow: 0 0 0 3px #d98b9a14; }
+.schedule-field button:focus-visible, .schedule-end-day button:focus-visible, .schedule-status button:focus-visible { outline: 2px solid #d7baff; outline-offset: 3px; }
+@media (max-width: 640px) {
+  .schedule-status button { align-items: flex-start; flex-wrap: wrap; padding: 13px; gap: 11px; }
+  .schedule-status .schedule-status-copy { flex: 1 1 100%; order: 1; font-size: 14px; }
+  .schedule-status-icon { width: 30px; height: 30px; border-radius: 9px; }
+  .schedule-status-icon .capry-icon { width: 16px; height: 16px; }
+  .schedule-status small { font-size: 12px; }
+  .schedule-clock-grid { grid-template-columns: 1fr; gap: 19px; }
+  .schedule-end-day { grid-template-columns: 1fr; gap: 12px; }
+  .schedule-segments button { flex: 1; min-height: 40px; }
+  .date-shortcuts { flex-wrap: wrap; }
+  .date-shortcuts > button:not(.date-trigger) { flex: 1; }
+  .date-shortcuts .date-trigger { flex-basis: 100%; }
+  .schedule-summary { padding: 15px; gap: 11px; }
+  .schedule-summary-icon { width: 30px; height: 30px; border-radius: 9px; }
+  .publish-wizard .time-control input { width: 2.65ch; min-width: 2.65ch; font-size: 24px; }
+  .schedule-calendar { width: 100%; padding: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .time-control, .date-shortcuts > button, .date-trigger .capry-icon:last-child, .schedule-segments button { transition: none; }
+}
