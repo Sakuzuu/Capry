@@ -3,6 +3,7 @@ export const iconPaths = {
   "arrow-right": ["M4 12h16", "m13 5 7 7-7 7"],
   "arrow-left": ["M20 12H4", "m11 5-7 7 7 7"],
   "arrow-down": ["M12 4v16", "m5 13 7 7 7-7"],
+  map: ["m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z", "M9 3v15", "M15 6v15"],
   upload: ["M12 16V4", "m6 10 6-6 6 6", "M4 16v4h16v-4"],
   check: ["m5 12 4 4L19 6"],
   close: ["m6 6 12 12", "M18 6 6 18"],

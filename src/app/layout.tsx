@@ -6,6 +6,7 @@ import "@fontsource/manrope/latin-600.css";
 import "./globals.css";
 import "./polish.css";
 import "./refinement.css";
+import "./map-experience.css";
 
 export const metadata: Metadata = {
   title: "Capry | Fiestas en Quito",

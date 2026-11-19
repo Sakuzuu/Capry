@@ -1,6 +1,5 @@
 import { Icon } from "@/components/icon";
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { EventCard } from "@/features/map/event-card";
@@ -28,7 +27,9 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
   return <div className="site-shell">
     <SiteHeader email={user?.email} />
     <main className="event-page-main">
-      <Link className="event-back" href="/#mapa"><Icon name="arrow-left" />Volver al mapa</Link>
+      {/* Native navigation preserves the map anchor when returning across routes. */}
+      {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+      <a className="event-back" href="/#mapa"><Icon name="arrow-left" />Volver al mapa</a>
       <div className="event-page-layout">
         <div className="event-page-intro">
           <p className="eyebrow">Fiestas en Quito</p>

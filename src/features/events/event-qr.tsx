@@ -15,7 +15,7 @@ export function EventQr({ id, name, onClose }: { id: string; name: string; onClo
     return () => { cancelled = true; };
   }, [id]);
   return <Modal titleId="qr-title" className="qr-modal" onClose={onClose}>
-    <button className="modal-close" type="button" onClick={onClose} aria-label="Cerrar código QR">×</button>
+    <button className="modal-close" type="button" onClick={onClose} aria-label="Cerrar código QR"><Icon name="close" /></button>
     <p className="eyebrow">UNA FIESTA, UN ENLACE</p>
     <h2 id="qr-title">Lleva la noche contigo.</h2>
     <p>Escanea el código para abrir la ficha de {name}.</p>

@@ -127,26 +127,40 @@ export function MapSection({ canPublish }: { canPublish: boolean }) {
       <div className="map-experience">
         <div className="map-panel">
           <div ref={containerRef} className="map-canvas" role="application" aria-label="Mapa de fiestas en Quito" />
-          <div className="map-panel-label" aria-hidden="true"><span className="map-panel-label-dot" /> QUITO, ECUADOR <span className="map-panel-label-separator">/</span> MAPA COLABORATIVO</div>
+          <div className="map-panel-label" aria-hidden="true">
+            <span className="map-panel-label-icon"><Icon name="map" /></span>
+            <span className="map-panel-label-copy"><strong>Quito, Ecuador</strong><span>Mapa colaborativo</span></span>
+          </div>
           {mapError && <p className="map-error">El mapa no pudo cargarse. Puedes explorar los eventos desde la lista.</p>}
           {eventsError && <p className="map-error">No se pudieron cargar los eventos. Mueve el mapa para reintentar.</p>}
           {selectedEvent ? <EventCard key={selectedEvent.id} initialEvent={selectedEvent} canInteract={canPublish} onClose={() => setSelectedId(null)} onUpdate={() => reloadEventsRef.current?.()} /> :
             <p className="map-hint">{loading ? "Buscando fiestas…" : events.length ? "Selecciona una fiesta del mapa o la lista" : "Aún no hay fiestas visibles en esta zona"}</p>}
         </div>
         <aside className="map-list" aria-label="Lista de fiestas visibles">
-          <div className="map-list-heading"><div><span>EN ESTA ZONA</span><h3>Explora las fiestas</h3></div><span className="map-list-count">{events.length} {events.length === 1 ? "fiesta" : "fiestas"}</span></div>
+          <div className="map-list-heading"><div><span>EN ESTA ZONA</span><h3>Explora las fiestas</h3></div><span className="map-list-count" aria-live="polite">{loading ? "Buscando…" : `${events.length} ${events.length === 1 ? "fiesta" : "fiestas"}`}</span></div>
           <div className="map-list-items">
-            {!loading && !events.length && <div className="map-list-empty"><span className="map-list-empty-symbol" aria-hidden="true">⌁</span><strong>La pista está abierta.</strong><p>No hay fiestas visibles aquí por ahora. Mueve el mapa para explorar otra zona.</p></div>}
+            {loading && !events.length && <div className="map-list-loading" aria-hidden="true"><span /><span /></div>}
+            {!loading && !events.length && <div className="map-list-empty"><span className="map-list-empty-symbol" aria-hidden="true"><Icon name="map" /></span><strong>La pista está abierta.</strong><p>No hay fiestas visibles aquí por ahora. Mueve el mapa para explorar otra zona.</p></div>}
             {events.map((event) => (
               <button className={`map-list-item${event.id === selectedId ? " is-selected" : ""}`} type="button" key={event.id} onClick={() => selectEvent(event)} aria-pressed={event.id === selectedId}>
-                <span className={`map-list-dot level-${markerLevel(event)}`} aria-hidden="true" />
-                <span className="map-list-item-copy"><strong>{eventName(event)}</strong><span>{eventSchedule(event)}</span></span>
+                <span className="map-list-cover" aria-hidden="true">
+                  {/* Event covers may come from the project's public Storage bucket. */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={event.cover_url || "/party-night-out.jpeg"} alt="" loading="lazy" decoding="async" onError={(image) => { image.currentTarget.onerror = null; image.currentTarget.src = "/party-night-out.jpeg"; }} />
+                </span>
+                <span className="map-list-item-copy">
+                  <strong>{eventName(event)}</strong>
+                  <span>{eventSchedule(event)}</span>
+                  <span className="map-list-state"><i className={`map-list-dot level-${markerLevel(event)}`} aria-hidden="true" />{event.status === "planned" ? "Próximamente" : "En curso"}</span>
+                </span>
                 <Icon name="arrow-up-right" className="map-list-arrow" />
               </button>
             ))}
           </div>
+          <div className="map-list-footer">
           <div className="map-legend" aria-label="Colores de los niveles"><span><i className="level-low" /> Bajo</span><span><i className="level-medium" /> Medio</span><span><i className="level-full" /> Full</span></div>
           <p className="map-list-note">El aforo se basa en reportes de las últimas dos horas.</p>
+          </div>
         </aside>
       </div>
       {publishing && <PublishForm onDone={finishPublishing} onClose={() => setPublishing(false)} />}
